@@ -1,0 +1,73 @@
+---
+sidebarTitle: "Metadata"
+title: "Metadata"
+icon: "file-pen"
+description: "Store and retrieve player metadata with the CrateBytes API."
+---
+
+## Getting Metadata
+
+### Endpoint
+
+```http
+GET https://cratebytes.com/api/game/metadata/get
+```
+
+<ParamField header="authorization (header)" type="string" required>
+    Bearer [token]
+</ParamField>
+
+### Example Response
+
+```json
+{
+    "statusCode": 200,
+    "data": { "data": "metadata" }
+}
+```
+
+## Adding & Updating Metadata
+
+### Endpoint
+
+```http
+PUT https://cratebytes.com/api/game/metadata/add
+```
+
+<ParamField header="authorization (header)" type="string" required>
+    Bearer [token]
+</ParamField>
+
+<ParamField body="data (body)" type="string" required>
+    The metadata to store or update. must be 1000 characters or less.
+</ParamField>
+
+### Example Response
+
+```json
+{
+    "statusCode": 200,
+    "data": { "data": "metadata" }
+}
+```
+
+## Deleting Metadata
+
+### Endpoint
+
+```http
+DELETE https://cratebytes.com/api/game/metadata/delete
+```
+
+<ParamField header="authorization (header)" type="string" required>
+    Bearer [token]
+</ParamField>
+
+### Example Response
+
+```json
+{
+    "statusCode": 200,
+    "data": { "message": "Deleted" }
+}
+```

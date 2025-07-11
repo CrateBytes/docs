@@ -1,0 +1,79 @@
+{
+    "$schema": "https://mintlify.com/schema.json",
+    "name": "CrateBytes",
+    "logo": {
+        "dark": "/favicon.png",
+        "light": "/favicon.png"
+    },
+    "favicon": "/favicon.png",
+    "colors": {
+        "primary": "#3a6df6",
+        "light": "#dce4f0",
+        "dark": "#1e1e2e",
+        "anchors": {
+            "from": "#3a6df6",
+            "to": "#f7faff"
+        }
+    },
+    "topbarLinks": [
+        { "name": "Github", "url": "https://github.com/CrateBytes/CrateBytes" }
+    ],
+    "topbarCtaButton": {
+        "name": "Get Started",
+        "url": "https://cratebytes.com"
+    },
+    "anchors": [
+        {
+            "name": "Community",
+            "icon": "discord",
+            "url": "https://discord.gg/UP4kzXZ66g"
+        },
+        {
+            "name": "Blog",
+            "icon": "newspaper",
+            "url": "https://CrateBytes.com/blog"
+        }
+    ],
+    "navigation": [
+        {
+            "group": "Getting Started",
+            "pages": ["getting-started/introduction"]
+        },
+        {
+            "group": "SDK",
+            "pages": ["sdk/overview", "sdk/unity"]
+        },
+        {
+            "group": "API Reference",
+            "pages": ["api-reference/overview", "api-reference/cloud-scripting"]
+        },
+        {
+            "group": "Game Authentication API",
+            "pages": ["api-reference/authentication"]
+        },
+        {
+            "group": "Game API",
+            "pages": [
+                "api-reference/game/session",
+                "api-reference/game/leaderboards",
+                "api-reference/game/metadata"
+            ]
+        }
+    ],
+    "analytics": {
+        "ga4": {
+            "measurementId": "G-C0WN39CHXV"
+        }
+    },
+    "footerSocials": {
+        "website": "https://cratebytes.com",
+        "github": "https://github.com/CrateBytes/CrateBytes/",
+        "discord": "https://discord.gg/UP4kzXZ66g",
+        "linkedin": "https://www.linkedin.com/company/cratebytes",
+        "x": "https://x.com/cratebytes"
+    },
+    "feedback": {
+        "suggestEdit": true,
+        "raiseIssue": true
+    }
+}
