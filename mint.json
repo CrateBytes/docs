@@ -16,22 +16,17 @@
         }
     },
     "topbarLinks": [
-        { "name": "Github", "url": "https://github.com/CrateBytes/CrateBytes" }
+        { "name": "Github", "url": "https://github.com/CrateBytes/" }
     ],
     "topbarCtaButton": {
         "name": "Get Started",
-        "url": "https://cratebytes.com"
+        "url": "https://cloud.cratebytes.com"
     },
     "anchors": [
         {
             "name": "Community",
             "icon": "discord",
             "url": "https://discord.gg/UP4kzXZ66g"
-        },
-        {
-            "name": "Blog",
-            "icon": "newspaper",
-            "url": "https://CrateBytes.com/blog"
         }
     ],
     "navigation": [
@@ -45,29 +40,21 @@
         },
         {
             "group": "API Reference",
-            "pages": ["api-reference/overview", "api-reference/cloud-scripting"]
-        },
-        {
-            "group": "Game Authentication API",
-            "pages": ["api-reference/authentication"]
+            "pages": ["api-reference/overview"]
         },
         {
             "group": "Game API",
             "pages": [
+                "api-reference/authentication",
                 "api-reference/game/session",
                 "api-reference/game/leaderboards",
                 "api-reference/game/metadata"
             ]
         }
     ],
-    "analytics": {
-        "ga4": {
-            "measurementId": "G-C0WN39CHXV"
-        }
-    },
     "footerSocials": {
         "website": "https://cratebytes.com",
-        "github": "https://github.com/CrateBytes/CrateBytes/",
+        "github": "https://github.com/CrateBytes/",
         "discord": "https://discord.gg/UP4kzXZ66g",
         "linkedin": "https://www.linkedin.com/company/cratebytes",
         "x": "https://x.com/cratebytes"

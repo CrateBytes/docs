@@ -1,116 +1,131 @@
 ---
-sidebarTitle: "Session"
+sidebarTitle: "Sessions"
 title: "Sessions"
 icon: "clock"
-description: "Manage player sessions with the CrateBytes API for tracking player activity and engagement."
+description: "Manage player sessions with the CrateBytes Game API for tracking player activity and engagement."
 ---
+
+The Sessions API allows you to track player activity and engagement by managing session lifecycle. All session endpoints require authentication.
+
+## Base URL
+
+All session endpoints are prefixed with `/api/game/session/`.
+
+## Authentication
+
+All session endpoints require a valid JWT token in the Authorization header:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
 
 ## Start Session
 
-The `Start Session` endpoint is used to initiate a new game session for a player. This is essential for tracking player activity and engagement within the game. When a session is started, it allows the game to monitor the player's playtime.
+Begin tracking a new player session.
 
-### Endpoint
+**Endpoint:** `POST /api/game/session/start`
 
-```http
-POST https://cratebytes.com/api/game/gameplay/start
+**Headers:**
+```
+Authorization: Bearer <your-jwt-token>
 ```
 
-<ParamField header="authorization (header)" type="string" required>
-    Bearer [token]
-</ParamField>
-
-### Example Response
-
+**Response:**
 ```json
 {
-    "statusCode": 201,
-    "data": { "message": "Session Started" }
-}
-```
-
-```json
-{
-    "statusCode": 400,
-    "error": {
-        "message": "Session already active"
-    }
+  "statusCode": 200,
+  "data": {
+    "sessionId": "session-uuid",
+    "startTime": "2024-01-01T12:00:00Z",
+    "playerId": "player-id"
+  }
 }
 ```
 
 ## Heartbeat
 
-The `Heartbeat` endpoint is used to keep an active game session alive. This is crucial for ensuring that the session does not expire due to inactivity. By sending periodic heartbeat requests, the game can maintain the session's active state and continue tracking the player's playtime. **A session will end after 10 minutes of inactivity, so it is recommended to send a heartbeat every 5 minutes.**
+Keep the session alive and update the last activity timestamp.
 
-### Endpoint
+**Endpoint:** `POST /api/game/session/heartbeat`
 
-```http
-POST https://cratebytes.com/api/game/gameplay/heartbeat
+**Headers:**
+```
+Authorization: Bearer <your-jwt-token>
 ```
 
-<ParamField header="authorization (header)" type="string" required>
-    Bearer [token]
-</ParamField>
-
-### Example Response
-
+**Response:**
 ```json
 {
-    "statusCode": 200,
-
-    "data": { "message": "Heartbeat" }
-}
-```
-
-```json
-{
-    "statusCode": 403,
-    "error": {
-        "message": "Session has expired"
-    }
-}
-```
-
-```json
-{
-    "statusCode": 404,
-    "error": {
-        "message": "No active session found"
-    }
+  "statusCode": 200,
+  "data": {
+    "sessionId": "session-uuid",
+    "lastActivity": "2024-01-01T12:30:00Z",
+    "playerId": "player-id"
+  }
 }
 ```
 
 ## End Session
 
-The `End Session` endpoint is used to terminate an active game session for a player. This is important for accurately tracking the total playtime of the player. When a session is ended, it stops the tracking of the player's playtime and finalizes the session data.
+Stop tracking the current session.
 
-### Endpoint
+**Endpoint:** `POST /api/game/session/stop`
 
-```http
-POST https://cratebytes.com/api/game/gameplay/end
+**Headers:**
+```
+Authorization: Bearer <your-jwt-token>
 ```
 
-<ParamField header="authorization (header)" type="string" required>
-    Bearer [token]
-</ParamField>
-
-### Example Response
-
+**Response:**
 ```json
 {
-    "statusCode": 200,
-
-    "data": {
-        "message": "Session ended successfully",
-        "sessionDuration": 325 // in seconds
-    }
+  "statusCode": 200,
+  "data": {
+    "sessionId": "session-uuid",
+    "startTime": "2024-01-01T12:00:00Z",
+    "endTime": "2024-01-01T13:00:00Z",
+    "duration": 3600,
+    "playerId": "player-id"
+  }
 }
 ```
 
+## Session Management Best Practices
+
+1. **Start Session**: Call when the player begins playing your game
+2. **Heartbeat**: Call periodically (every 5-10 minutes) to keep the session active
+3. **End Session**: Call when the player stops playing or closes the game
+
+## Error Responses
+
+### Unauthorized
 ```json
 {
-    "statusCode": 404,
-    "error": {
-        "message": "No active session found"
-    }
+  "statusCode": 401,
+  "error": {
+    "message": "Unauthorized"
+  }
 }
 ```
+
+### Session Already Active
+```json
+{
+  "statusCode": 400,
+  "error": {
+    "message": "Session already active"
+  }
+}
+```
+
+### No Active Session
+```json
+{
+  "statusCode": 400,
+  "error": {
+    "message": "No active session found"
+  }
+}
+```
+
+

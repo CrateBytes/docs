@@ -2,24 +2,63 @@
 sidebarTitle: "API Overview"
 title: "API Overview"
 icon: "network-wired"
-description: "Learn about the CrateBytes API and how to interact with it."
+description: "Learn about the CrateBytes Game API and how to interact with it."
 ---
 
 <CardGroup cols={2}>
     <Card title="Authentication" icon="lock" href="authentication">
-        The CrateBytes API offers **Steam Authentication** for secure logins
+        The CrateBytes Game API offers **Steam Authentication** for secure logins
         with Steam accounts and **Guest Authentication** for access without
-        registration.
+        registration using project public keys.
     </Card>
     <Card title="Sessions" icon="clock" href="game/session">
-        Manage player sessions with the CrateBytes API for tracking player
-        activity and engagement.
+        Manage player sessions with the CrateBytes Game API for tracking player
+        activity and engagement. Start, maintain, and end player sessions.
     </Card>
     <Card title="Leaderboards" icon="trophy" href="game/leaderboards">
-        Implement global leaderboards and rankings with the CrateBytes API to
-        boost player competitiveness and engagement.
+        Implement global leaderboards and rankings with the CrateBytes Game API to
+        boost player competitiveness and engagement. Submit scores and retrieve rankings.
     </Card>
     <Card title="Player Metadata" icon="file-pen" href="game/metadata">
-        Store and retrieve player metadata with the CrateBytes API.
+        Store and retrieve player metadata with the CrateBytes Game API. Manage
+        player-specific data and settings.
     </Card>
 </CardGroup>
+
+## Base URL
+
+All Game API endpoints are prefixed with `/api/game/`.
+
+## Authentication
+
+Most endpoints require authentication using a JWT token obtained from the authentication endpoints. Include the token in the Authorization header:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+## Response Format
+
+All API responses follow a consistent format:
+
+```json
+{
+  "statusCode": 200,
+  "data": {
+    // Response data here
+  }
+}
+```
+
+## Error Handling
+
+Errors are returned with appropriate HTTP status codes and error messages:
+
+```json
+{
+  "statusCode": 400,
+  "error": {
+    "message": "Error description"
+  }
+}
+```

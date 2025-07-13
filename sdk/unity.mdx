@@ -7,234 +7,199 @@ description: "Learn about the CrateBytes Unity SDK and how to use it."
 
 # CrateBytes Unity SDK
 
-The CrateBytes Unity SDK provides a set of tools for implementing player authentication, session management, leaderboards, and metadata management in your Unity game. This document guides you through setup and usage of key features.
+A comprehensive Unity SDK for integrating CrateBytes backend services into your games. This SDK provides authentication, session management, leaderboards, and player metadata functionality.
 
 ## Installation
 
-1. **Download the SDK**: Visit the [CrateBytes Unity SDK releases page](https://github.com/CrateBytes/CrateBytes-UnitySDK/releases/) to download the latest `.unitypackage` file.
-2. **Import the SDK**: In Unity, go to `Assets > Import Package > Custom Package`, then select the downloaded `.unitypackage` file to import.
-3. **Add the Prefab**: Add the `CrateBytesManager` prefab to your scene to enable SDK functionality.
+There are two ways to install the CrateBytes Unity SDK:
 
-## Initial Setup
+### Method 1: Unity Package Manager (Recommended)
 
-1. **Configure Project Key**: Retrieve your Project Key from the CrateBytes Project Dashboard under **Settings > API Keys**. Add this Project Key to the `CrateBytesManager` component in your Unity scene.
-2. **Add Namespace**: To use the SDK functions in your scripts, add:
+1. Open Unity Package Manager (`Window > Package Manager`)
+2. Click the **+** button in the top-left corner
+3. Select **"Add package from git URL"**
+4. Enter the repository URL: `https://github.com/CrateBytes/CrateBytes-UnitySDK.git`
+5. Click **Add**
 
-    ```csharp
-    using CrateBytes;
-    ```
+### Method 2: Manual Installation
 
-3. **Initialize API Calls**: Use the following syntax to call SDK functions:
-    ```csharp
-    CrateBytesManager.instance.<function>();
-    ```
+1. Visit the [CrateBytes Unity SDK GitHub repository](https://github.com/CrateBytes/CrateBytes-UnitySDK)
+2. Download the latest release or clone the repository
+3. Import the package into your Unity project
 
-## Authentication
+### Setup After Installation
 
-### Guest Login
+1. Add the `CrateBytesSDK` component to a GameObject in your scene
+2. Configure the SDK with your project's base URL and public key
 
-Logs in a player as a guest.
+## Configuration
+
+### SDK Settings
+
+The SDK can be configured through the Inspector or via code:
 
 ```csharp
-public void GuestLogin(string playerId = "", System.Action<GuestLoginResponse> callback = null)
+// Configure via code
+CrateBytesSDK.Instance.Initialize("https://api.cratebytes.com/api/game", "your-public-key");
 ```
 
-**Parameters**
+### Logging
 
--   `playerId` _(optional)_: A unique identifier for the player.
--   `callback`: Action to handle the `GuestLoginResponse`.
+The SDK includes a built-in logging system that can be enabled/disabled:
 
-**Example**
+**Via Inspector:**
+- Select the GameObject with the `CrateBytesSDK` component
+- Check/uncheck the "Enable Logging" field
+
+**Via Code:**
+```csharp
+// Enable logging
+CrateBytesSDK.Instance.enableLogging = true;
+
+// Or use the logger directly
+CrateBytesLogger.Enabled = true;
+
+// Disable logging (recommended for production)
+CrateBytesLogger.Enabled = false;
+```
+
+**Note:** Logging is disabled by default for production builds. Enable only when debugging.
+
+## Quick Start
+
+### 1. Setup
+
+Add the SDK component to your scene:
 
 ```csharp
-CrateBytesManager.instance.GuestLogin(<PLAYERID OR "">, (GuestLoginResponse res) => {
-    Debug.Log("Authenticated as a guest with id of " + res.playerId);
+// The SDK will automatically create a singleton instance
+var sdk = CrateBytesSDK.Instance;
+
+// Configure with your project settings
+sdk.Initialize("https://api.cratebytes.com/api/game", "your-public-key");
+```
+
+### 2. Authentication
+
+```csharp
+// Guest authentication
+yield return CrateBytesSDK.Instance.Auth.GuestLogin(null, (response) =>
+{
+    if (response.Success)
+    {
+        Debug.Log($"Authenticated! Player ID: {response.Data.playerId}");
+    }
 });
-```
 
-### Steam Login
-
-Logs in a player using a Steam authentication ticket.
-
-```csharp
-public void SteamLogin(string steamAuthTicket, System.Action<SteamLoginResponse> callback = null)
-```
-
-**Parameters**
-
--   `steamAuthTicket`: The player's Steam authentication ticket obtained from Steamworks SDK.
--   `callback`: Action to handle the `SteamLoginResponse`.
-
-**Example**
-
-```csharp
-CrateBytesManager.instance.SteamLogin(steamAuthTicket, (SteamLoginResponse res) => {
-    Debug.Log("Authenticated as a guest with id of " + res.playerId);
-});
-```
-
-## Sessions
-
-### Start Session
-
-Starts a new session for the player.
-
-```csharp
-public void StartSession(System.Action<string> callback = null)
-```
-
-**Parameters**
-
--   `callback`: Action called after the session starts.
-
-**Example**
-
-```csharp
-CrateBytesManager.instance.StartSession(response => {
-    Debug.Log("Session started");
-});
-```
-
-### Heartbeat Session
-
-Sends a heartbeat to keep the session active.
-
-```csharp
-public void HeartbeatSession(System.Action<string> callback = null)
-```
-
-**Example**
-
-```csharp
-CrateBytesManager.instance.HeartbeatSession(response => {
-    Debug.Log("Session heartbeat");
-});
-```
-
-### End Session
-
-Ends the current session.
-
-```csharp
-public void EndSession(System.Action<string> callback = null)
-```
-
-**Example**
-
-```csharp
-CrateBytesManager.instance.EndSession(response => {
-    Debug.Log("Session ended");
-});
-```
-
-## Leaderboards
-
-### Submit Score to Leaderboard
-
-Submits a score to a specified leaderboard.
-
-```csharp
-public void SubmitScoreToLeaderboard(string leaderboardId, int score, System.Action<string> callback = null)
-```
-
-**Parameters**
-
--   `leaderboardId`: The ID of the leaderboard.
--   `score`: The player's score.
--   `callback`: Action called after the score is submitted.
-
-**Example**
-
-```csharp
-CrateBytesManager.instance.SubmitScoreToLeaderboard(leaderboardId, score, (string res) => {
-    Debug.Log("Score submitted");
-});
-```
-
-### Get Leaderboard
-
-Retrieves leaderboard data for a specific leaderboard ID.
-
-```csharp
-public void GetLeaderboard(string leaderboardId, int page = 0, System.Action<LeaderboardResponse> callback = null)
-```
-
-**Parameters**
-
--   `leaderboardId`: The ID of the leaderboard.
--   `page` _(optional)_: The page number for leaderboard pagination.
--   `callback`: Action to handle the `LeaderboardResponse`.
-
-**Example**
-
-```csharp
-CrateBytesManager.instance.GetLeaderboard(leaderboardId, page, (LeaderboardResponse res) => {
-    Debug.Log("Leaderboard:");
-    foreach (LeaderboardEntry entry in res.entries) {
-        Debug.Log($"Player [{entry.player.playerId}] has a score of {entry.score}");
+// Steam authentication
+yield return CrateBytesSDK.Instance.Auth.SteamLogin("steam-auth-ticket", (response) =>
+{
+    if (response.Success)
+    {
+        Debug.Log($"Steam authenticated! Player ID: {response.Data.playerId}");
     }
 });
 ```
 
-## Metadata
-
-### Get Metadata
-
-Retrieves metadata information.
+### 3. Session Management
 
 ```csharp
-public void GetMetadata(System.Action<GetMetadataResponse> callback = null)
+// Start a session
+yield return CrateBytesSDK.Instance.Session.StartSession((response) =>
+{
+    if (response.Success)
+    {
+        Debug.Log("Session started!");
+        // Start automatic heartbeat
+        CrateBytesSDK.Instance.StartHeartbeat();
+    }
+});
+
+// Stop session when done
+yield return CrateBytesSDK.Instance.Session.StopSession();
 ```
 
-**Example**
+### 4. Leaderboards
 
 ```csharp
-CrateBytesManager.instance.GetMetadata(metadata => {
-    Debug.Log("Metadata retrieved: " + metadata.data);
+// Submit a score
+yield return CrateBytesSDK.Instance.Leaderboard.SubmitScore("leaderboard-id", "1000", (response) =>
+{
+    if (response.Success)
+    {
+        Debug.Log("Score submitted!");
+    }
+});
+
+// Get leaderboard entries
+yield return CrateBytesSDK.Instance.Leaderboard.GetLeaderboard("leaderboard-id", 1, (response) =>
+{
+    if (response.Success)
+    {
+        foreach (var entry in response.Data.entries)
+        {
+            Debug.Log($"Player {entry.player.playerId}: {entry.score}");
+        }
+    }
 });
 ```
 
-### Add/Update Metadata
-
-Adds or updates metadata for the game.
+### 5. Player Metadata
 
 ```csharp
-public void AddUpdateMetadata(string data, System.Action<AddUpdateMetadataResponse> callback = null)
-```
+// Define your player data structure
+[Serializable]
+public class PlayerData
+{
+    public int Level { get; set; }
+    public int Experience { get; set; }
+    public string[] Achievements { get; set; }
+}
 
-**Parameters**
+// Save player data
+var playerData = new PlayerData
+{
+    Level = 5,
+    Experience = 1250,
+    Achievements = new[] { "FirstWin", "SpeedRunner" }
+};
 
--   `data`: The metadata to add or update.
--   `callback`: Action to call after the metadata is updated.
+yield return CrateBytesSDK.Instance.Metadata.SetPlayerDataObject(playerData, (response) =>
+{
+    if (response.Success)
+    {
+        Debug.Log("Player data saved!");
+    }
+});
 
-**Example**
-
-```csharp
-CrateBytesManager.instance.AddUpdateMetadata("new metadata", response => {
-    Debug.Log("Metadata updated: " + response.success);
+// Retrieve player data
+yield return CrateBytesSDK.Instance.Metadata.GetPlayerData<PlayerData>((response) =>
+{
+    if (response.Success && response.Data != null)
+    {
+        Debug.Log($"Level: {response.Data.Level}, XP: {response.Data.Experience}");
+    }
 });
 ```
 
-### Delete Metadata
+## Best Practices
 
-Deletes the specified metadata.
+### 1. Session Management
+- Always start a session when the player begins playing
+- Use automatic heartbeat to keep sessions alive
+- Stop sessions when the player stops playing or the app is paused
 
-```csharp
-public void DeleteMetadata(System.Action<string> callback = null)
-```
+### 2. Error Handling
+- Always check response success before using data
+- Implement retry logic for network failures
+- Log errors for debugging
 
-**Example**
+### 3. Data Management
+- Use strongly-typed data structures for player metadata
+- Validate data before sending to the server
+- Handle data serialization errors gracefully
 
-```csharp
-CrateBytesManager.instance.DeleteMetadata(response => {
-    Debug.Log("Metadata deleted: " + response);
-});
-```
-
-## Additional Notes
-
--   **Prefab Requirement**: Ensure the `CrateBytesManager` prefab is added to your scene.
--   **Project Key**: Retrieve your Project Key from the CrateBytes Dashboard for authentication setup.
--   **Callbacks**: Always check the responses from callbacks to verify operation success.
-
-For further support, create an issue at [CrateBytes SDK GitHub Repository](https://github.com/CrateBytes/CrateBytes-UnitySDK).
+### 4. Performance
+- Use coroutines for all API calls
+- Don't make too many requests simultaneously
+- Cache frequently accessed data locally

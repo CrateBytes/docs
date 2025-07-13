@@ -1,73 +1,203 @@
 ---
-sidebarTitle: "Metadata"
-title: "Metadata"
+sidebarTitle: "Player Metadata"
+title: "Player Metadata"
 icon: "file-pen"
-description: "Store and retrieve player metadata with the CrateBytes API."
+description: "Store and retrieve player metadata with the CrateBytes Game API. Manage player-specific data and settings."
 ---
 
-## Getting Metadata
+The Player Metadata API allows you to store and retrieve custom data for each player. This can include player preferences, game progress, settings, or any other player-specific information.
 
-### Endpoint
+## Base URL
 
-```http
-GET https://cratebytes.com/api/game/metadata/get
+All metadata endpoints are prefixed with `/api/game/metadata/`.
+
+## Authentication
+
+All metadata endpoints require a valid JWT token in the Authorization header:
+
+```
+Authorization: Bearer <your-jwt-token>
 ```
 
-<ParamField header="authorization (header)" type="string" required>
-    Bearer [token]
-</ParamField>
+## Get Player Metadata
 
-### Example Response
+Retrieve the current player's metadata.
 
+**Endpoint:** `GET /api/game/metadata`
+
+**Headers:**
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+**Response:**
 ```json
 {
-    "statusCode": 200,
-    "data": { "data": "metadata" }
+  "statusCode": 200,
+  "data": {
+    "playerId": "player-123",
+    "sequentialId": 12345,
+    "metadata": {
+      "level": 5,
+      "coins": 1000,
+      "settings": {
+        "soundEnabled": true,
+        "musicVolume": 0.8
+      },
+      "lastPlayed": "2024-01-01T12:00:00Z"
+    }
+  }
 }
 ```
 
-## Adding & Updating Metadata
+## Get Metadata by Sequential ID
 
-### Endpoint
+Retrieve metadata for a specific player using their sequential ID.
 
-```http
-PUT https://cratebytes.com/api/game/metadata/add
+**Endpoint:** `GET /api/game/metadata/{sequentialId}`
+
+**Headers:**
+```
+Authorization: Bearer <your-jwt-token>
 ```
 
-<ParamField header="authorization (header)" type="string" required>
-    Bearer [token]
-</ParamField>
+**Example Request:**
+```
+GET /api/game/metadata/12345
+```
 
-<ParamField body="data (body)" type="string" required>
-    The metadata to store or update. must be 1000 characters or less.
-</ParamField>
-
-### Example Response
-
+**Response:**
 ```json
 {
-    "statusCode": 200,
-    "data": { "data": "metadata" }
+  "statusCode": 200,
+  "data": {
+    "playerId": "player-123",
+    "sequentialId": 12345,
+    "metadata": {
+      "level": 5,
+      "coins": 1000,
+      "settings": {
+        "soundEnabled": true,
+        "musicVolume": 0.8
+      }
+    }
+  }
 }
 ```
 
-## Deleting Metadata
+## Set Player Metadata
 
-### Endpoint
+Store or update the current player's metadata.
 
-```http
-DELETE https://cratebytes.com/api/game/metadata/delete
+**Endpoint:** `POST /api/game/metadata`
+
+**Headers:**
+```
+Authorization: Bearer <your-jwt-token>
+Content-Type: application/json
 ```
 
-<ParamField header="authorization (header)" type="string" required>
-    Bearer [token]
-</ParamField>
-
-### Example Response
-
+**Request Body:**
 ```json
 {
-    "statusCode": 200,
-    "data": { "message": "Deleted" }
+  "data": {
+    "level": 5,
+    "coins": 1000,
+    "settings": {
+      "soundEnabled": true,
+      "musicVolume": 0.8
+    },
+    "lastPlayed": "2024-01-01T12:00:00Z"
+  }
 }
 ```
+
+**Response:**
+```json
+{
+  "statusCode": 200,
+  "data": {
+    "playerId": "player-123",
+    "sequentialId": 12345,
+    "metadata": {
+      "level": 5,
+      "coins": 1000,
+      "settings": {
+        "soundEnabled": true,
+        "musicVolume": 0.8
+      },
+      "lastPlayed": "2024-01-01T12:00:00Z"
+    }
+  }
+}
+```
+
+## Delete Player Metadata
+
+Remove all metadata for the current player.
+
+**Endpoint:** `DELETE /api/game/metadata`
+
+**Headers:**
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+**Response:**
+```json
+{
+  "statusCode": 200,
+  "data": "Data deleted"
+}
+```
+
+## Metadata Structure
+
+The metadata can contain any JSON-serializable data. Common use cases include:
+
+- **Game Progress**: Level, experience points, achievements
+- **Player Settings**: Audio settings, graphics preferences, controls
+- **Game State**: Current position, inventory, unlocked content
+- **Statistics**: Play time, high scores, completion rates
+
+## Error Responses
+
+### Unauthorized
+```json
+{
+  "statusCode": 401,
+  "error": {
+    "message": "Unauthorized"
+  }
+}
+```
+
+### Player Not Found
+```json
+{
+  "statusCode": 404,
+  "error": {
+    "message": "Player not found"
+  }
+}
+```
+
+### Invalid Data
+```json
+{
+  "statusCode": 400,
+  "error": {
+    "message": "Invalid metadata format"
+  }
+}
+```
+
+
+
+## Best Practices
+
+1. **Data Structure**: Use consistent data structures for better organization
+2. **Size Limits**: Keep metadata reasonably sized (under 1MB)
+3. **Privacy**: Don't store sensitive personal information
+4. **Backup**: Consider backing up important metadata locally
+5. **Validation**: Validate metadata structure before sending

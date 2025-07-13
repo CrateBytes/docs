@@ -2,93 +2,123 @@
 sidebarTitle: "Authentication"
 title: "Authentication"
 icon: "lock"
-description: "The CrateBytes API offers **Steam Authentication** for secure logins with Steam accounts and **Guest Authentication** for access without registration."
+description: "Learn how to authenticate with the CrateBytes Game API using Steam or guest authentication."
 ---
+
+The CrateBytes Game API provides two authentication methods: **Steam Authentication** and **Guest Authentication**. Both methods require a project public key for identification.
+
+## Base URL
+
+All authentication endpoints are prefixed with `/api/game/auth/`.
 
 ## Guest Authentication
 
-Guest Authentication allows users to access the CrateBytes API without needing to register or link a Steam account.
-This method provides a seamless way for new users to get started while still ensuring that each player has a unique identifier within the system.
+Authenticate without requiring a Steam account. This method creates a temporary player session.
 
-### Endpoint
+### Guest Login
 
-```http
-POST https://cratebytes.com/api/game/platform/guest
-```
+**Endpoint:** `POST /api/game/auth/guest`
 
-<ParamField body="projectKey (body)" type="string" required>
-    The project key for the game.
-</ParamField>
-
-<ParamField body="playerId (body)" type="string">
-    The player ID for an existing player. This parameter is optional and should
-    be used if you want to log in to an existing player account.
-</ParamField>
-
-### Response
-
-<ResponseField name="token" type="string" required>
-    Token that can be used to authenticate the player in future requests.
-</ResponseField>
-
-<ResponseField name="playerId" type="string" required>
-    The player ID for the authenticated player used to log in to the player.
-    account
-</ResponseField>
-
-### Example Response
-
+**Request Body:**
 ```json
 {
-    "statusCode": 200,
-    "data": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-        "playerId": "cm2s2i8n500000cml3tqr0ko9"
-    }
+  "publicKey": "your-project-public-key",
+  "playerId": "optional-custom-player-id"
 }
 ```
+
+**Response:**
+```json
+{
+  "statusCode": 200,
+  "data": {
+    "token": "jwt-token-here",
+    "playerId": "generated-or-custom-player-id",
+    "sequentialId": 12345
+  }
+}
+```
+
+**Parameters:**
+- `publicKey` (required): Your project's public key for identification
+- `playerId` (optional): Custom player ID. If not provided, one will be generated
 
 ## Steam Authentication
 
-Steam Authentication allows users to log in to the CrateBytes API using their Steam accounts. This method leverages Steam's secure authentication system to ensure that the player's identity is verified.
+Authenticate using a Steam account for enhanced features and persistent player data.
 
-<Warning>
-    You have to add your steam publisher key and steam appid in your project
-    settings
-</Warning>
+### Steam Login
 
-### Endpoint
+**Endpoint:** `POST /api/game/auth/steam`
 
-```http
-POST https://cratebytes.com/api/game/platform/steam
-```
-
-<ParamField body="projectKey (body)" type="string" required>
-    The project key for the game.
-</ParamField>
-
-<ParamField body="steamAuthTicket (body)" type="string" required>
-    The Steam authentication ticket received from the Steam client.
-</ParamField>
-
-### Response
-
-<ResponseField name="token" type="string" required>
-    Token that can be used to authenticate the player in future requests.
-</ResponseField>
-
-<ResponseField name="playerId" type="string" required>
-    The player ID for the authenticated player.
-</ResponseField>
-
-### Example Response
-
+**Request Body:**
 ```json
 {
-    "statusCode": 200,
-    "data": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-        "playerId": "cm2s2i8n500000cml3tqr0ko9"
-    }
+  "publicKey": "your-project-public-key",
+  "steamAuthTicket": "steam-authentication-ticket"
 }
 ```
+
+**Response:**
+```json
+{
+  "statusCode": 200,
+  "data": {
+    "token": "jwt-token-here",
+    "playerId": "player-id",
+    "sequentialId": 12345,
+    "steamId": "steam-64-id"
+  }
+}
+```
+
+**Parameters:**
+- `publicKey` (required): Your project's public key for identification
+- `steamAuthTicket` (required): Steam authentication ticket from the Steam API
+
+## Using the Authentication Token
+
+After successful authentication, you'll receive a JWT token. Include this token in the Authorization header for all subsequent API calls:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+## Error Responses
+
+### Invalid Project Key
+```json
+{
+  "statusCode": 404,
+  "error": {
+    "message": "Project not found"
+  }
+}
+```
+
+### Invalid Steam Ticket
+```json
+{
+  "statusCode": 400,
+  "error": {
+    "message": "Invalid Steam authentication ticket"
+  }
+}
+```
+
+### General Authentication Errors
+```json
+{
+  "statusCode": 400,
+  "error": {
+    "message": "Authentication failed"
+  }
+}
+```
+
+## Implementation Notes
+
+1. **Project Public Key**: You must obtain a public key from your CrateBytes project dashboard
+2. **Steam Integration**: For Steam authentication, you'll need to integrate with Steam's authentication system
+3. **Token Expiration**: JWT tokens expire after 24 hours
+4. **Player Identification**: Each player gets a unique `sequentialId` for internal tracking
